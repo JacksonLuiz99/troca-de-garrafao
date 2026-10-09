@@ -31,7 +31,8 @@ export class Avatar {
 
   protected readonly iniciais = computed(() => {
     const partes = this.nome().trim().split(/\s+/);
-    const iniciais = partes.length > 1 ? partes[0][0] + partes[partes.length - 1][0] : partes[0].slice(0, 2);
+    const iniciais =
+      partes.length > 1 ? partes[0][0] + partes[partes.length - 1][0] : partes[0].slice(0, 2);
     return iniciais.toUpperCase();
   });
 

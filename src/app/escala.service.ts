@@ -39,7 +39,10 @@ export class EscalaService {
   readonly proximo = computed(() => {
     const fila = this.ativos();
     return (
-      fila.find((r) => r.status === STATUS.proximo) ?? fila.find((r) => !r.status || r.status === STATUS.pendente) ?? fila[0] ?? null
+      fila.find((r) => r.status === STATUS.proximo) ??
+      fila.find((r) => !r.status || r.status === STATUS.pendente) ??
+      fila[0] ??
+      null
     );
   });
 

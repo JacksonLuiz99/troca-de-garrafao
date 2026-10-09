@@ -18,7 +18,9 @@ import { EscalaService } from '../escala.service';
       >
         <h2 class="text-xl font-bold text-slate-900">{{ titulo() }}</h2>
         @if (escala.erro(); as erro) {
-          <p class="mt-3 rounded-xl bg-rose-50 p-3 text-sm text-rose-800" role="alert">{{ erro }}</p>
+          <p class="mt-3 rounded-xl bg-rose-50 p-3 text-sm text-rose-800" role="alert">
+            {{ erro }}
+          </p>
         }
         <ng-content />
       </div>

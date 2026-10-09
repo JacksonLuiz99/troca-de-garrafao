@@ -23,15 +23,17 @@ const ROTULO = 'mt-4 mb-1.5 block text-sm font-medium text-slate-700';
         (click)="abrirCadastro()"
       >
         <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" class="size-5">
-          <path d="M10 4a1 1 0 0 1 1 1v4h4a1 1 0 1 1 0 2h-4v4a1 1 0 1 1-2 0v-4H5a1 1 0 1 1 0-2h4V5a1 1 0 0 1 1-1Z" />
+          <path
+            d="M10 4a1 1 0 0 1 1 1v4h4a1 1 0 1 1 0 2h-4v4a1 1 0 1 1-2 0v-4H5a1 1 0 1 1 0-2h4V5a1 1 0 0 1 1-1Z"
+          />
         </svg>
         Adicionar
       </button>
     </div>
 
     <p class="mt-4 rounded-2xl bg-sky-50 p-4 text-sm text-sky-900">
-      Para adicionar ou remover alguém é preciso informar uma justificativa. Ela fica registrada na coluna
-      Observações da planilha.
+      Para adicionar ou remover alguém é preciso informar uma justificativa. Ela fica registrada na
+      coluna Observações da planilha.
     </p>
 
     @if (escala.carregando() && !escala.responsaveis().length) {
@@ -44,7 +46,9 @@ const ROTULO = 'mt-4 mb-1.5 block text-sm font-medium text-slate-700';
 
     <ul class="mt-4 space-y-2">
       @for (r of escala.ativos(); track r.linha) {
-        <li class="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200/70">
+        <li
+          class="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200/70"
+        >
           <span class="w-8 text-center text-sm font-bold text-slate-400">{{ r.ordem }}</span>
           <app-avatar [nome]="r.nome" />
           <div class="min-w-0 flex-1">
@@ -108,7 +112,13 @@ const ROTULO = 'mt-4 mb-1.5 block text-sm font-medium text-slate-700';
           <label [class]="rotulo" for="novo-obs">
             Observação <span class="font-normal text-slate-400">(opcional)</span>
           </label>
-          <textarea id="novo-obs" name="observacao" rows="2" [class]="campo" [(ngModel)]="observacao"></textarea>
+          <textarea
+            id="novo-obs"
+            name="observacao"
+            rows="2"
+            [class]="campo"
+            [(ngModel)]="observacao"
+          ></textarea>
 
           <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <button
@@ -150,7 +160,13 @@ const ROTULO = 'mt-4 mb-1.5 block text-sm font-medium text-slate-700';
           <label [class]="rotulo" for="rem-obs">
             Observação <span class="font-normal text-slate-400">(opcional)</span>
           </label>
-          <textarea id="rem-obs" name="observacao" rows="2" [class]="campo" [(ngModel)]="observacao"></textarea>
+          <textarea
+            id="rem-obs"
+            name="observacao"
+            rows="2"
+            [class]="campo"
+            [(ngModel)]="observacao"
+          ></textarea>
 
           <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <button

@@ -32,7 +32,9 @@ import { Modal } from '../ui/modal';
         <p class="text-sm font-semibold tracking-widest text-sky-100 uppercase">Agora é a vez de</p>
         <div class="mt-3 flex items-center gap-4">
           <app-avatar [nome]="proximo.nome" [grande]="true" tom="bg-white text-sky-700" />
-          <p class="min-w-0 text-3xl font-extrabold tracking-tight break-words sm:text-4xl">{{ proximo.nome }}</p>
+          <p class="min-w-0 text-3xl font-extrabold tracking-tight break-words sm:text-4xl">
+            {{ proximo.nome }}
+          </p>
         </div>
 
         <p class="relative mt-4 text-sm text-sky-100">
@@ -74,10 +76,14 @@ import { Modal } from '../ui/modal';
 
       @if (escala.fila().length > 1) {
         <section class="mt-8">
-          <h2 class="px-1 text-sm font-semibold tracking-wide text-slate-500 uppercase">Depois vem</h2>
+          <h2 class="px-1 text-sm font-semibold tracking-wide text-slate-500 uppercase">
+            Depois vem
+          </h2>
           <ol class="mt-3 space-y-2">
             @for (r of escala.fila().slice(1); track r.linha; let i = $index) {
-              <li class="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200/70">
+              <li
+                class="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200/70"
+              >
                 <span class="w-8 text-center text-sm font-bold text-slate-400">{{ i + 2 }}º</span>
                 <app-avatar [nome]="r.nome" />
                 <div class="min-w-0 flex-1">
@@ -105,7 +111,9 @@ import { Modal } from '../ui/modal';
           <strong class="text-slate-900">{{ nome }}</strong> fica logo em seguida na fila.
         </p>
 
-        <label class="mt-5 mb-1.5 block text-sm font-medium text-slate-700" for="motivo-pulo">Motivo</label>
+        <label class="mt-5 mb-1.5 block text-sm font-medium text-slate-700" for="motivo-pulo"
+          >Motivo</label
+        >
         <textarea
           id="motivo-pulo"
           rows="2"
@@ -138,8 +146,8 @@ import { Modal } from '../ui/modal';
     @if (confirmando(); as nome) {
       <app-modal titulo="Confirmar troca do galão?" (fechar)="fechar()">
         <p class="mt-2 text-slate-600">
-          Vamos registrar na planilha que <strong class="text-slate-900">{{ nome }}</strong> trocou o galão hoje,
-          {{ hoje }}.
+          Vamos registrar na planilha que <strong class="text-slate-900">{{ nome }}</strong> trocou
+          o galão hoje, {{ hoje }}.
         </p>
 
         <label class="mt-5 mb-1.5 block text-sm font-medium text-slate-700" for="obs-troca">
