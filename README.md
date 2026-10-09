@@ -33,7 +33,7 @@ npm start
 npm run deploy
 ```
 
-O comando compila o projeto e publica `dist/troca-de-garrafao/browser` na branch `gh-pages`
+O comando (`scripts/deploy.sh`) compila o projeto e publica `dist/troca-de-garrafao/browser` na branch `gh-pages`
 do repositório (`origin`). No GitHub, deixe **Settings > Pages** apontando para a branch `gh-pages`.
 
 As rotas usam hash (`/#/admin`) e o `base href` é relativo, então o site funciona em qualquer
