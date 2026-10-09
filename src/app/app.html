@@ -1,0 +1,44 @@
+<div class="min-h-screen bg-slate-50 text-slate-900">
+  <header class="border-b border-slate-200 bg-white">
+    <div class="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-4 py-4">
+      <h1 class="text-xl font-bold text-slate-800">💧 Troca de Galão de Água</h1>
+      <nav class="flex gap-1 rounded-lg bg-slate-100 p-1 text-sm font-medium" aria-label="Seções">
+        <a
+          routerLink="/"
+          routerLinkActive="bg-white text-sky-700 shadow-sm"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="rounded-md px-4 py-1.5 text-slate-600"
+          >Troca</a
+        >
+        <a
+          routerLink="/admin"
+          routerLinkActive="bg-white text-sky-700 shadow-sm"
+          class="rounded-md px-4 py-1.5 text-slate-600"
+          >Administrador</a
+        >
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-3xl px-4 py-6">
+    @if (!escala.configurado) {
+      <p class="mb-4 rounded-lg bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200" role="alert">
+        Falta configurar a URL do Apps Script em <code>src/app/config.ts</code>. Veja o README.
+      </p>
+    }
+    @if (escala.erro(); as erro) {
+      <div class="mb-4 flex items-start justify-between gap-3 rounded-lg bg-rose-50 p-4 text-sm text-rose-800 ring-1 ring-rose-200" role="alert">
+        <span>{{ erro }}</span>
+        <button type="button" class="shrink-0 font-semibold underline" (click)="escala.carregar()">
+          Tentar de novo
+        </button>
+      </div>
+    }
+
+    <router-outlet />
+
+    <p class="mt-8 text-center text-sm text-slate-500">
+      <a class="underline hover:text-sky-700" [href]="planilhaUrl" target="_blank" rel="noopener">Abrir planilha</a>
+    </p>
+  </main>
+</div>
