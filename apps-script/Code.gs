@@ -10,9 +10,13 @@ const CABECALHO = 'Ordem / Posição';
 const COL_INICIAL = 2; // coluna B
 const TOTAL_COLUNAS = 5; // B..F
 
+// Aumente a cada alteração: aparece na resposta e mostra qual versão está publicada.
+const VERSAO = 3;
+
 const STATUS = {
   CONCLUIDO: 'Concluído',
   PROXIMO: 'Próximo',
+  PENDENTE: 'Pendente',
   REMOVIDO: 'Removido',
 };
 
@@ -25,6 +29,7 @@ function doGet() {
 function doPost(e) {
   return executar(function (aba) {
     const dados = JSON.parse(e.postData.contents);
+    garantirValidacao(aba);
     switch (dados.action) {
       case 'troca':
         registrarTroca(aba, dados);
@@ -52,9 +57,9 @@ function executar(acao) {
   let resposta;
   try {
     trava.waitLock(20000);
-    resposta = { ok: true, responsaveis: acao(obterAba()) };
+    resposta = { ok: true, versao: VERSAO, responsaveis: acao(obterAba()) };
   } catch (erro) {
-    resposta = { ok: false, erro: String(erro.message || erro) };
+    resposta = { ok: false, versao: VERSAO, erro: String(erro.message || erro) };
   } finally {
     trava.releaseLock();
   }
@@ -125,11 +130,37 @@ function ajustarFormatacao(aba) {
     .setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP)
     .setVerticalAlignment('middle');
   aba.autoResizeRows(primeira, itens.length);
+  garantirValidacao(aba);
 }
 
 /** Para rodar pelo editor do Apps Script quando a tabela estiver desalinhada. */
 function corrigirFormatacao() {
   ajustarFormatacao(obterAba());
+}
+
+/**
+ * A coluna de status tem uma lista suspensa; inclui "Removido" nela para a planilha
+ * aceitar esse valor, mantendo as opções que já existiam.
+ */
+function garantirValidacao(aba) {
+  const itens = lerEscala(aba).itens;
+  if (!itens.length) return;
+  const intervalo = aba.getRange(itens[0].linha, COL_INICIAL + 2, itens.length, 1);
+  const regra = intervalo.getCell(1, 1).getDataValidation();
+
+  let valores = [STATUS.PROXIMO, STATUS.PENDENTE, STATUS.CONCLUIDO];
+  if (regra && regra.getCriteriaType() === SpreadsheetApp.DataValidationCriteria.VALUE_IN_LIST) {
+    valores = regra.getCriteriaValues()[0].slice();
+  }
+  if (valores.indexOf(STATUS.REMOVIDO) < 0) valores.push(STATUS.REMOVIDO);
+
+  intervalo.setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(valores, true).setAllowInvalid(false).build(),
+  );
+}
+
+function aguardando(item) {
+  return !item.status || item.status === STATUS.PENDENTE;
 }
 
 function ativos(itens) {
@@ -176,9 +207,7 @@ function registrarTroca(aba, dados) {
     fila.filter(function (item) {
       return item.status === STATUS.PROXIMO;
     })[0] ||
-    fila.filter(function (item) {
-      return !item.status;
-    })[0] ||
+    fila.filter(aguardando)[0] ||
     fila[0];
 
   if (dados.nome && dados.nome !== atual.nome) {
@@ -214,9 +243,7 @@ function pularVez(aba, dados) {
     fila.filter(function (item) {
       return item.status === STATUS.PROXIMO;
     })[0] ||
-    fila.filter(function (item) {
-      return !item.status;
-    })[0] ||
+    fila.filter(aguardando)[0] ||
     fila[0];
   if (!atual || fila.length < 2) throw new Error('Não há outra pessoa na escala para assumir a vez.');
   if (dados.nome !== atual.nome) {

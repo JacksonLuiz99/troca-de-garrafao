@@ -19,6 +19,7 @@ interface Resposta {
 export const STATUS = {
   concluido: 'Concluído',
   proximo: 'Próximo',
+  pendente: 'Pendente',
   removido: 'Removido',
 } as const;
 
@@ -38,7 +39,7 @@ export class EscalaService {
   readonly proximo = computed(() => {
     const fila = this.ativos();
     return (
-      fila.find((r) => r.status === STATUS.proximo) ?? fila.find((r) => !r.status) ?? fila[0] ?? null
+      fila.find((r) => r.status === STATUS.proximo) ?? fila.find((r) => !r.status || r.status === STATUS.pendente) ?? fila[0] ?? null
     );
   });
 
