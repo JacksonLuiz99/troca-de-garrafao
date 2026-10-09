@@ -1,33 +1,40 @@
-<div class="min-h-screen bg-slate-50 text-slate-900">
-  <header class="border-b border-slate-200 bg-white">
-    <div class="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-4 py-4">
-      <h1 class="text-xl font-bold text-slate-800">💧 Troca de Galão de Água</h1>
-      <nav class="flex gap-1 rounded-lg bg-slate-100 p-1 text-sm font-medium" aria-label="Seções">
+<div class="min-h-dvh bg-linear-to-b from-sky-50 to-slate-100 text-slate-900">
+  <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur">
+    <div class="mx-auto flex max-w-xl items-center justify-between gap-3 px-4 py-3">
+      <a routerLink="/" class="flex items-center gap-2">
+        <span class="flex size-9 items-center justify-center rounded-xl bg-sky-600 text-white">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+            <path d="M12 2.5c-.3 0-.6.1-.8.4C9.6 4.900 5 10.300 5 14.500a7 7 0 0 0 14 0c0-4.200-4.600-9.600-6.200-11.600a1 1 0 0 0-.8-.4Z" />
+          </svg>
+        </span>
+        <span class="text-sm font-bold whitespace-nowrap text-slate-900 sm:text-base">Troca de Galão</span>
+      </a>
+      <nav class="flex gap-1 rounded-xl bg-slate-100 p-1 text-sm font-semibold" aria-label="Seções">
         <a
           routerLink="/"
-          routerLinkActive="bg-white text-sky-700 shadow-sm"
+          routerLinkActive="bg-white !text-sky-700 shadow-sm"
           [routerLinkActiveOptions]="{ exact: true }"
-          class="rounded-md px-4 py-1.5 text-slate-600"
-          >Troca</a
+          class="rounded-lg px-2.5 py-1.5 text-slate-500"
+          >Escala</a
         >
         <a
           routerLink="/admin"
-          routerLinkActive="bg-white text-sky-700 shadow-sm"
-          class="rounded-md px-4 py-1.5 text-slate-600"
+          routerLinkActive="bg-white !text-sky-700 shadow-sm"
+          class="rounded-lg px-2.5 py-1.5 text-slate-500"
           >Administrador</a
         >
       </nav>
     </div>
   </header>
 
-  <main class="mx-auto max-w-3xl px-4 py-6">
+  <main class="mx-auto max-w-xl px-4 py-6">
     @if (!escala.configurado) {
-      <p class="mb-4 rounded-lg bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200" role="alert">
+      <p class="mb-4 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200" role="alert">
         Falta configurar a URL do Apps Script em <code>src/app/config.ts</code>. Veja o README.
       </p>
     }
     @if (escala.erro(); as erro) {
-      <div class="mb-4 flex items-start justify-between gap-3 rounded-lg bg-rose-50 p-4 text-sm text-rose-800 ring-1 ring-rose-200" role="alert">
+      <div class="mb-4 flex items-start justify-between gap-3 rounded-2xl bg-rose-50 p-4 text-sm text-rose-800 ring-1 ring-rose-200" role="alert">
         <span>{{ erro }}</span>
         <button type="button" class="shrink-0 font-semibold underline" (click)="escala.carregar()">
           Tentar de novo
@@ -37,8 +44,24 @@
 
     <router-outlet />
 
-    <p class="mt-8 text-center text-sm text-slate-500">
-      <a class="underline hover:text-sky-700" [href]="planilhaUrl" target="_blank" rel="noopener">Abrir planilha</a>
+    <p class="mt-10 text-center text-sm text-slate-500">
+      Os dados ficam na
+      <a class="font-medium text-sky-700 underline" [href]="planilhaUrl" target="_blank" rel="noopener">planilha do Google</a>.
     </p>
   </main>
+
+  @if (escala.aviso(); as aviso) {
+    <div class="pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center px-4" role="status">
+      <p class="flex items-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-sm font-medium text-white shadow-xl">
+        <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" class="size-5 text-emerald-400">
+          <path
+            fill-rule="evenodd"
+            d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.8 3.8 6.8-6.8a1 1 0 0 1 1.4 0Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        {{ aviso }}
+      </p>
+    </div>
+  }
 </div>

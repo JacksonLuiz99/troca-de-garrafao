@@ -29,6 +29,7 @@ export class EscalaService {
   readonly carregando = signal(false);
   readonly salvando = signal(false);
   readonly erro = signal<string | null>(null);
+  readonly aviso = signal('');
 
   readonly ativos = computed(() => this.responsaveis().filter((r) => r.status !== STATUS.removido));
   readonly removidos = computed(() =>
@@ -40,6 +41,30 @@ export class EscalaService {
       fila.find((r) => r.status === STATUS.proximo) ?? fila.find((r) => !r.status) ?? fila[0] ?? null
     );
   });
+
+  /** Ativos na ordem em que vão trocar: começa por quem é a vez e dá a volta na lista. */
+  readonly fila = computed(() => {
+    const ativos = this.ativos();
+    const proximo = this.proximo();
+    const inicio = proximo ? ativos.indexOf(proximo) : 0;
+    return [...ativos.slice(inicio), ...ativos.slice(0, inicio)];
+  });
+  readonly ultimaTroca = computed(() => {
+    let ultimo: Responsavel | null = null;
+    // De trás para frente: em datas iguais vale quem está mais perto do fim da fila.
+    for (const r of [...this.fila()].reverse()) {
+      if (r.dataUltimaTroca && (!ultimo || dataEmMs(r) > dataEmMs(ultimo))) ultimo = r;
+    }
+    return ultimo;
+  });
+
+  private avisoTimer?: ReturnType<typeof setTimeout>;
+
+  notificar(mensagem: string): void {
+    clearTimeout(this.avisoTimer);
+    this.aviso.set(mensagem);
+    this.avisoTimer = setTimeout(() => this.aviso.set(''), 5000);
+  }
 
   async carregar(): Promise<void> {
     if (!this.configurado) return;
@@ -96,4 +121,9 @@ export class EscalaService {
       return false;
     }
   }
+}
+
+function dataEmMs(responsavel: Responsavel): number {
+  const [dia, mes, ano] = responsavel.dataUltimaTroca.split('/').map(Number);
+  return new Date(ano, mes - 1, dia).getTime();
 }

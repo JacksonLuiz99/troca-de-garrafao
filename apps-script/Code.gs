@@ -38,6 +38,7 @@ function doPost(e) {
       default:
         throw new Error('Ação desconhecida: ' + dados.action);
     }
+    ajustarFormatacao(aba);
     SpreadsheetApp.flush();
     return lerEscala(aba).itens;
   });
@@ -95,6 +96,37 @@ function lerEscala(aba) {
     });
   }
   return { linhaCabecalho: linhaCabecalho, itens: itens };
+}
+
+/**
+ * Deixa todas as linhas da escala com a aparência das duas primeiras (bordas e cores
+ * alternadas) e quebra o texto das Observações, para a tabela crescer sem desalinhar.
+ */
+function ajustarFormatacao(aba) {
+  const itens = lerEscala(aba).itens;
+  if (!itens.length) return;
+  const primeira = itens[0].linha;
+
+  for (let i = 2; i < itens.length; i++) {
+    aba
+      .getRange(primeira + (i % 2), COL_INICIAL, 1, TOTAL_COLUNAS)
+      .copyTo(
+        aba.getRange(itens[i].linha, COL_INICIAL, 1, TOTAL_COLUNAS),
+        SpreadsheetApp.CopyPasteType.PASTE_FORMAT,
+        false,
+      );
+  }
+  aba.getRange(primeira, COL_INICIAL + 3, itens.length, 1).setNumberFormat('dd/MM/yyyy');
+  aba
+    .getRange(primeira, COL_INICIAL + 4, itens.length, 1)
+    .setWrapStrategy(SpreadsheetApp.WrapStrategy.WRAP)
+    .setVerticalAlignment('middle');
+  aba.autoResizeRows(primeira, itens.length);
+}
+
+/** Para rodar pelo editor do Apps Script quando a tabela estiver desalinhada. */
+function corrigirFormatacao() {
+  ajustarFormatacao(obterAba());
 }
 
 function ativos(itens) {
