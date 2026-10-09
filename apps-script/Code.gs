@@ -29,6 +29,9 @@ function doPost(e) {
       case 'troca':
         registrarTroca(aba, dados);
         break;
+      case 'pular':
+        pularVez(aba, dados);
+        break;
       case 'adicionar':
         adicionarResponsavel(aba, dados);
         break;
@@ -196,6 +199,40 @@ function registrarTroca(aba, dados) {
   }
   if (fila.indexOf(atual) === fila.length - 1) definirStatus(aba, atual, '');
   passarVez(aba, fila, atual);
+}
+
+/**
+ * Quem é a vez não pode trocar: troca de lugar na escala com a pessoa seguinte,
+ * que assume a vez. O ausente fica logo depois dela.
+ */
+function pularVez(aba, dados) {
+  const motivo = String(dados.motivo || '').trim();
+  if (!motivo) throw new Error('Informe o motivo.');
+
+  const fila = ativos(lerEscala(aba).itens);
+  const atual =
+    fila.filter(function (item) {
+      return item.status === STATUS.PROXIMO;
+    })[0] ||
+    fila.filter(function (item) {
+      return !item.status;
+    })[0] ||
+    fila[0];
+  if (!atual || fila.length < 2) throw new Error('Não há outra pessoa na escala para assumir a vez.');
+  if (dados.nome !== atual.nome) {
+    throw new Error('A escala mudou: o próximo agora é ' + atual.nome + '. Atualize a página.');
+  }
+
+  const seguinte = fila[(fila.indexOf(atual) + 1) % fila.length];
+  const observacao = 'Passou a vez em ' + hoje() + '. Motivo: ' + motivo;
+
+  // Colunas: nome (C), status (D), data (E), observações (F). A ordem (B) não muda.
+  aba
+    .getRange(atual.linha, COL_INICIAL + 1, 1, 4)
+    .setValues([[seguinte.nome, STATUS.PROXIMO, seguinte.dataUltimaTroca, seguinte.observacoes]]);
+  aba
+    .getRange(seguinte.linha, COL_INICIAL + 1, 1, 4)
+    .setValues([[atual.nome, '', atual.dataUltimaTroca, observacao]]);
 }
 
 function montarObservacao(prefixo, dados) {

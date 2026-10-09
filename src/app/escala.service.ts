@@ -77,6 +77,10 @@ export class EscalaService {
     return this.enviar({ action: 'troca', nome, observacao });
   }
 
+  pularVez(nome: string, motivo: string): Promise<boolean> {
+    return this.enviar({ action: 'pular', nome, motivo });
+  }
+
   adicionar(nome: string, justificativa: string, observacao: string): Promise<boolean> {
     return this.enviar({ action: 'adicionar', nome, justificativa, observacao });
   }

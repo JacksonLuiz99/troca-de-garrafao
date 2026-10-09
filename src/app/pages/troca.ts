@@ -62,6 +62,13 @@ import { Modal } from '../ui/modal';
           <p class="relative mt-3 text-center text-sm text-sky-100">
             Ao confirmar, a vez passa para {{ seguinte.nome }}.
           </p>
+          <button
+            type="button"
+            class="relative mt-4 w-full rounded-2xl px-6 py-3 font-semibold text-white ring-1 ring-white/50 transition hover:bg-white/10"
+            (click)="abrirPulo()"
+          >
+            {{ proximo.nome }} não pode trocar agora
+          </button>
         }
       </section>
 
@@ -89,6 +96,43 @@ import { Modal } from '../ui/modal';
         <p class="text-lg font-semibold text-slate-800">Ninguém na escala</p>
         <p class="mt-1 text-slate-500">Cadastre os responsáveis na aba Administrador.</p>
       </div>
+    }
+
+    @if (pulando(); as nome) {
+      <app-modal [titulo]="'Passar a vez de ' + nome + '?'" (fechar)="fechar()">
+        <p class="mt-2 text-slate-600">
+          <strong class="text-slate-900">{{ seguinte()?.nome }}</strong> assume a troca agora e
+          <strong class="text-slate-900">{{ nome }}</strong> fica logo em seguida na fila.
+        </p>
+
+        <label class="mt-5 mb-1.5 block text-sm font-medium text-slate-700" for="motivo-pulo">Motivo</label>
+        <textarea
+          id="motivo-pulo"
+          rows="2"
+          class="w-full rounded-xl border border-slate-300 p-3 text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:ring-4 focus:ring-sky-100 focus:outline-none"
+          placeholder="Ex.: está de férias"
+          [(ngModel)]="motivo"
+        ></textarea>
+
+        <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            class="rounded-xl px-5 py-3 font-semibold text-slate-600 hover:bg-slate-100"
+            [disabled]="escala.salvando()"
+            (click)="fechar()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="rounded-xl bg-sky-600 px-5 py-3 font-semibold text-white shadow-sm hover:bg-sky-700 disabled:opacity-50"
+            [disabled]="escala.salvando() || !motivo().trim()"
+            (click)="pular(nome)"
+          >
+            {{ escala.salvando() ? 'Salvando…' : 'Passar a vez' }}
+          </button>
+        </div>
+      </app-modal>
     }
 
     @if (confirmando(); as nome) {
@@ -135,6 +179,8 @@ export class Troca {
   protected readonly escala = inject(EscalaService);
   protected readonly confirmando = signal('');
   protected readonly observacao = signal('');
+  protected readonly pulando = signal('');
+  protected readonly motivo = signal('');
   protected readonly hoje = new Date().toLocaleDateString('pt-BR');
   protected readonly seguinte = computed(() => this.escala.fila()[1] ?? null);
 
@@ -146,8 +192,25 @@ export class Troca {
     this.confirmando.set(proximo.nome);
   }
 
+  protected abrirPulo(): void {
+    const proximo = this.escala.proximo();
+    if (!proximo) return;
+    this.escala.erro.set(null);
+    this.motivo.set('');
+    this.pulando.set(proximo.nome);
+  }
+
   protected fechar(): void {
-    if (!this.escala.salvando()) this.confirmando.set('');
+    if (this.escala.salvando()) return;
+    this.confirmando.set('');
+    this.pulando.set('');
+  }
+
+  protected async pular(nome: string): Promise<void> {
+    if (await this.escala.pularVez(nome, this.motivo().trim())) {
+      this.pulando.set('');
+      this.escala.notificar(`Agora é a vez de ${this.escala.proximo()?.nome}.`);
+    }
   }
 
   protected async confirmar(nome: string): Promise<void> {

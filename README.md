@@ -5,6 +5,7 @@ Frontend em Angular + Tailwind CSS que alimenta a
 através de um Google Apps Script.
 
 - **Troca**: mostra quem é o próximo e registra a troca (status `Concluído` + data; o seguinte vira `Próximo`; no fim da lista o ciclo recomeça).
+- **Não pode trocar agora**: se quem é a vez está ausente, ele troca de lugar na escala com a pessoa seguinte (que assume a vez) e o motivo vai para Observações.
 - **Administrador**: cadastra e remove responsáveis mediante justificativa e observação. Quem é removido continua na planilha com status `Removido` e é pulado na fila.
 
 ## 1. Publicar o Apps Script
